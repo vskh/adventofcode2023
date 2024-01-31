@@ -119,19 +119,19 @@ fn calc_part_numbers_sum_and_gear_ratios_sum(schematic: &Vec<&str>) -> (u64, u64
     let mut gear_ratios_sum = 0_u64;
     for (row, l) in schematic.iter().enumerate() {
         let mut part_start = -1_i32;
-        for (idx, ch) in l.chars().enumerate() {
+        for (col, ch) in l.chars().enumerate() {
             if ch == '*' {
-                if let Some(r) = calc_gear_ratio(schematic, row, idx) {
+                if let Some(r) = calc_gear_ratio(schematic, row, col) {
                     gear_ratios_sum += r;
                 }
             }
 
             if ch.is_ascii_digit() {
                 if part_start == -1 {
-                    part_start = idx as i32;
+                    part_start = col as i32;
                 }
             } else if part_start != -1 {
-                let part_end = idx - 1;
+                let part_end = col - 1;
 
                 part_numbers_sum += process_number(schematic, row, part_start as usize, part_end);
 
