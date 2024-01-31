@@ -43,6 +43,20 @@ fn is_part_number(schematic: &Vec<&str>, row: usize, range: RangeInclusive<usize
 }
 
 fn calc_part_numbers_sum(schematic: &Vec<&str>) -> u64 {
+    fn process_number(schematic: &Vec<&str>, row: usize, start: usize, end: usize) -> u64 {
+        let number =  schematic[row][start..=end].parse::<u64>().unwrap();
+        let is_part = is_part_number(&schematic, row, start..=end);
+
+        #[cfg(debug_assertions)]
+        println!("Found number '{}' in row {}, is_part = {}", number, row + 1, is_part);
+
+        if is_part {
+            number
+        } else {
+            0
+        }
+    }
+
     let mut part_numbers_sum = 0_u64;
     for (row, l) in schematic.iter().enumerate() {
         let mut part_start = -1_i32;
@@ -53,18 +67,17 @@ fn calc_part_numbers_sum(schematic: &Vec<&str>) -> u64 {
                 }
             } else if part_start != -1 {
                 let part_end = idx - 1;
-                let number =  l[part_start as usize..=part_end].parse::<u64>().unwrap();
-                let is_part = is_part_number(&schematic, row, part_start as usize..=part_end);
 
-                #[cfg(debug_assertions)]
-                println!("Found number '{}' in row {}, is_part = {}", number, row + 1, is_part);
-
-                if is_part {
-                    part_numbers_sum += number;
-                }
+                part_numbers_sum += process_number(schematic, row, part_start as usize, part_end);
 
                 part_start = -1;
             }
+        }
+
+        if part_start != -1 {
+            let part_end = l.len() - 1;
+
+            part_numbers_sum += process_number(schematic, row, part_start as usize, part_end);
         }
     }
 
@@ -124,11 +137,11 @@ mod test {
 .....+.58.
 ..592.....
 ......755.
-...$.*....
-.664.598.."
+...$.*...*
+.664.598.1"
             .split("\n")
             .collect::<Vec<&str>>();
 
-        assert_eq!(super::calc_part_numbers_sum(&schematic), 4361);
+        assert_eq!(super::calc_part_numbers_sum(&schematic), 4362);
     }
 }
