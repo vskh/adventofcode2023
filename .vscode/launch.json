@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Cargo launch",
+            "cargo": {
+                "args": [
+                    "run",
+                    "--package",
+                    "day5",
+                    "--bin",
+                    "day5"
+                ]
+            },
+            "cwd": "${workspaceRoot}/day5",
+            "program": "${cargo:program}",
+            "args": []
+        }
+    ]
+}

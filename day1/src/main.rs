@@ -17,15 +17,24 @@ fn get_calibration_value_v1(s: &str) -> u32 {
 
 fn get_calibration_value_v2(s: &str) -> u32 {
     let translate_table = HashMap::from([
-        ("1", 1), ("one", 1),
-        ("2", 2), ("two", 2),
-        ("3", 3), ("three", 3),
-        ("4", 4), ("four", 4),
-        ("5", 5), ("five", 5),
-        ("6", 6), ("six", 6),
-        ("7", 7), ("seven", 7),
-        ("8", 8), ("eight", 8),
-        ("9", 9), ("nine", 9),
+        ("1", 1),
+        ("one", 1),
+        ("2", 2),
+        ("two", 2),
+        ("3", 3),
+        ("three", 3),
+        ("4", 4),
+        ("four", 4),
+        ("5", 5),
+        ("five", 5),
+        ("6", 6),
+        ("six", 6),
+        ("7", 7),
+        ("seven", 7),
+        ("8", 8),
+        ("eight", 8),
+        ("9", 9),
+        ("nine", 9),
     ]);
 
     let mut base_idx = 0;
@@ -43,7 +52,10 @@ fn get_calibration_value_v2(s: &str) -> u32 {
             }
 
             if let None = last {
-                let compare_window = &s[max(0, s.len().saturating_sub(kv.0.len()).saturating_sub(base_idx))..s.len().saturating_sub(base_idx)];
+                let compare_window = &s[max(
+                    0,
+                    s.len().saturating_sub(kv.0.len()).saturating_sub(base_idx),
+                )..s.len().saturating_sub(base_idx)];
 
                 if compare_window == *kv.0 {
                     last = Some(kv.1);
