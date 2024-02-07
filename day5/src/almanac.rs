@@ -1,9 +1,10 @@
+use std::ops::Range;
 use crate::mapper::Mapper;
 use anyhow::{anyhow, Result};
 
 #[derive(Debug)]
 pub struct Almanac {
-    pub seeds: Vec<u64>,
+    pub seeds: Vec<Range<u64>>,
     maps: Vec<Mapper>,
 }
 
@@ -30,7 +31,7 @@ impl TryFrom<String> for Almanac {
     type Error = anyhow::Error;
 
     fn try_from(value: String) -> Result<Self> {
-        let [seeds_def, map_defs @ ..] = &(value.split("\n\n").collect::<Vec<&str>>())[..] else {
+        let [seeds_def, map_defs @ ..] = &value.split("\n\n").collect::<Vec<&str>>()[..] else {
             Err(anyhow!("Invalid structure of almanac definition: at least seeds definition is required: {}", value))?
         };
 
@@ -46,7 +47,16 @@ impl TryFrom<String> for Almanac {
                             .map_err(|e| anyhow!("Failed to parse seed: {}", e))
                     })
                     .collect::<Result<Vec<u64>>>()
-            })?;
+            })?
+            .windows(2)
+            .map(|w| {
+                if let &[start, length] = w {
+                    Ok(start..(start + length))
+                } else {
+                    Err(anyhow!("Invalid seed ranges definition."))
+                }
+            })
+            .collect::<Result<Vec<Range<u64>>>>()?;
 
         let mut maps: Vec<Mapper> = vec![];
         for map_def in map_defs {
@@ -98,9 +108,9 @@ mod test {
         let almanac_def = String::from(
             "seeds: 79 14 55 13
 
-                                seed-to-soil map:
-                                50 98 2
-                                52 50 48",
+                seed-to-soil map:
+                50 98 2
+                52 50 48",
         );
         let almanac = Almanac::try_from(almanac_def);
         println!("Almanac: {:?}", almanac);
