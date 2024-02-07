@@ -36,13 +36,24 @@ fn extract_number_at_pos(line: &str, pos: usize) -> Option<(u64, (usize, usize))
 }
 
 fn calc_gear_ratio(schematic: &Vec<&str>, row: usize, col: usize) -> Option<u64> {
-    if row > schematic.len() || col > schematic[row].len() || schematic[row].chars().nth(col).unwrap() != '*' {
+    if row > schematic.len()
+        || col > schematic[row].len()
+        || schematic[row].chars().nth(col).unwrap() != '*'
+    {
         None
     } else {
         let min_row = if row == 0 { row } else { row - 1 };
-        let max_row = if row == schematic.len() - 1 { row } else { row + 1 };
+        let max_row = if row == schematic.len() - 1 {
+            row
+        } else {
+            row + 1
+        };
         let min_col = if col == 0 { col } else { col - 1 };
-        let max_col = if col == schematic[row].len() - 1 { col } else { col + 1 };
+        let max_col = if col == schematic[row].len() - 1 {
+            col
+        } else {
+            col + 1
+        };
 
         let mut adjacent_nums = HashSet::new();
         for r in min_row..=max_row {
@@ -92,7 +103,10 @@ fn is_part_number(schematic: &Vec<&str>, row: usize, range: RangeInclusive<usize
     }
 
     for r in r_min..=r_max {
-        if schematic[r][c_min..=c_max].chars().any(|ch| ch != '.' && !ch.is_ascii_digit()) {
+        if schematic[r][c_min..=c_max]
+            .chars()
+            .any(|ch| ch != '.' && !ch.is_ascii_digit())
+        {
             return true;
         }
     }
@@ -102,11 +116,16 @@ fn is_part_number(schematic: &Vec<&str>, row: usize, range: RangeInclusive<usize
 
 fn calc_part_numbers_sum_and_gear_ratios_sum(schematic: &Vec<&str>) -> (u64, u64) {
     fn process_number(schematic: &Vec<&str>, row: usize, start: usize, end: usize) -> u64 {
-        let number =  schematic[row][start..=end].parse::<u64>().unwrap();
+        let number = schematic[row][start..=end].parse::<u64>().unwrap();
         let is_part = is_part_number(&schematic, row, start..=end);
 
         #[cfg(debug_assertions)]
-        println!("Found number '{}' in row {}, is_part = {}", number, row + 1, is_part);
+        println!(
+            "Found number '{}' in row {}, is_part = {}",
+            number,
+            row + 1,
+            is_part
+        );
 
         if is_part {
             number
@@ -163,7 +182,10 @@ fn main() -> io::Result<()> {
     // search for part numbers
     let (part_numbers_sum, gear_ratios_sum) = calc_part_numbers_sum_and_gear_ratios_sum(&sch);
 
-    println!("Sum of all part numbers in schematic is {}", part_numbers_sum);
+    println!(
+        "Sum of all part numbers in schematic is {}",
+        part_numbers_sum
+    );
     println!("Sum of all gear ratios in schematic is {}", gear_ratios_sum);
 
     Ok(())
@@ -208,16 +230,28 @@ mod test {
             .split("\n")
             .collect::<Vec<&str>>();
 
-        assert_eq!(super::calc_part_numbers_sum_and_gear_ratios_sum(&schematic), (4362, 467835));
+        assert_eq!(
+            super::calc_part_numbers_sum_and_gear_ratios_sum(&schematic),
+            (4362, 467835)
+        );
     }
 
     #[test]
     fn extract_number_at_pos_test() {
         assert_eq!(super::extract_number_at_pos("...", 1), None);
         assert_eq!(super::extract_number_at_pos(".1.", 1), Some((1, (1, 1))));
-        assert_eq!(super::extract_number_at_pos(".123.", 1), Some((123, (1, 3))));
-        assert_eq!(super::extract_number_at_pos(".123.", 2), Some((123, (1, 3))));
-        assert_eq!(super::extract_number_at_pos(".123.", 3), Some((123, (1, 3))));
+        assert_eq!(
+            super::extract_number_at_pos(".123.", 1),
+            Some((123, (1, 3)))
+        );
+        assert_eq!(
+            super::extract_number_at_pos(".123.", 2),
+            Some((123, (1, 3)))
+        );
+        assert_eq!(
+            super::extract_number_at_pos(".123.", 3),
+            Some((123, (1, 3)))
+        );
         assert_eq!(super::extract_number_at_pos(".123.", 4), None);
     }
 
