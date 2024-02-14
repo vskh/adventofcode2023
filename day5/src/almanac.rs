@@ -9,6 +9,12 @@ pub struct Almanac {
 }
 
 impl Almanac {
+    pub fn new(seeds: Vec<Range<u64>>, maps: Vec<Mapper>) -> Self {
+        // pre-cache maps for seed to anything
+
+        Almanac { seeds, maps }
+    }
+
     pub fn try_find_location_for_seed(&mut self, seed: u64) -> Option<u64> {
         let map_target = "location";
         let mut curr_mapped_item = "seed";
