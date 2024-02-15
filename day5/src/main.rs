@@ -17,7 +17,7 @@ fn main() -> Result<()> {
         println!("Processing seed range #{}: {:?}", seed_range_idx, seed_range);
 
         for seed in seed_range.clone() {
-            if let Some(loc) = almanac.try_find_location_for_seed(seed) {
+            if let Some(loc) = almanac.try_map("seed", seed, "location") {
                 if loc < closest_location {
                     closest_location = loc;
 

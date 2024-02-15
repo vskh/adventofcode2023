@@ -10,15 +10,31 @@ pub struct Almanac {
 
 impl Almanac {
     pub fn new(seeds: Vec<Range<u64>>, maps: Vec<Mapper>) -> Self {
-        // pre-cache maps for seed to anything
+        // build direct maps from seeds to everything
+
 
         Almanac { seeds, maps }
     }
 
-    pub fn try_find_location_for_seed(&mut self, seed: u64) -> Option<u64> {
-        let map_target = "location";
-        let mut curr_mapped_item = "seed";
-        let mut curr_mapped_value = seed;
+    fn build_map(maps: &Vec<Mapper>, what: &str, to_what: &str) -> Option<Mapper> {
+        let map_target = to_what;
+        let mut curr_mapped_item = what;
+
+        while curr_mapped_item != map_target {
+            if let Some(idx) = maps.iter().position(|m| m.source == curr_mapped_item) {
+
+            } else {
+                return None;
+            }
+        }
+
+        None
+    }
+
+    pub fn try_map(&mut self, what: &str, what_id: u64, to_what: &str) -> Option<u64> {
+        let map_target = to_what;
+        let mut curr_mapped_item = what;
+        let mut curr_mapped_value = what_id;
 
         while curr_mapped_item != map_target {
             if let Some(idx) = self.maps.iter().position(|m| m.source == curr_mapped_item) {
@@ -121,5 +137,10 @@ mod test {
         let almanac = Almanac::try_from(almanac_def);
         println!("Almanac: {:?}", almanac);
         assert!(matches!(almanac, Ok(_)));
+    }
+
+    #[test]
+    fn almanac_build_map_test() {
+        assert!(matches!(Almanac::build_map(&vec![], "nonexistent", "nonexistent"), None));
     }
 }
