@@ -1,6 +1,6 @@
-use std::{fmt::Display, ops::Range};
 use std::collections::HashSet;
 use std::ops::Add;
+use std::{fmt::Display, ops::Range};
 
 #[derive(Debug)]
 pub struct Mapper {
@@ -33,12 +33,23 @@ impl Mapper {
         src_id
     }
 
-    pub fn breakpoints(&self) -> HashSet<u64> {
+    pub fn src_breakpoints(&self) -> HashSet<u64> {
         let mut result = HashSet::new();
 
         for (src, _dst) in self.mappings.iter() {
             result.insert(src.start);
             result.insert(src.end);
+        }
+
+        result
+    }
+
+    pub fn dest_breakpoints(&self) -> HashSet<u64> {
+        let mut result = HashSet::new();
+
+        for (_src, dst) in self.mappings.iter() {
+            result.insert(dst.start);
+            result.insert(dst.end);
         }
 
         result
@@ -58,7 +69,10 @@ impl Add for &mut Mapper {
         if self.destination != rhs.source {
             None
         } else {
-            let mut breakpoints: Vec<u64> = self.breakpoints().union(&rhs.breakpoints()).map(|&i| i).collect();
+            let mut breakpoints: Vec<u64> = (&(&self.src_breakpoints() | &self.dest_breakpoints())
+                | &rhs.src_breakpoints())
+                .into_iter()
+                .collect();
             breakpoints.sort();
 
             let mut result_maps: Vec<(u64, u64, u64)> = vec![];
@@ -80,8 +94,8 @@ impl Add for &mut Mapper {
 
 #[cfg(test)]
 mod test {
-    use std::collections::HashSet;
     use super::Mapper;
+    use std::collections::HashSet;
 
     #[test]
     fn mapper_map_test() {
@@ -97,7 +111,7 @@ mod test {
     fn mapper_breakpoints_test() {
         let mapper = Mapper::new("seed", "soil", vec![(50, 98, 2), (52, 50, 48)]);
 
-        assert_eq!(mapper.breakpoints(), HashSet::from([50, 98, 100]));
+        assert_eq!(mapper.src_breakpoints(), HashSet::from([50, 98, 100]));
     }
 
     #[test]
@@ -107,7 +121,9 @@ mod test {
 
         let res = &mut m1 + &mut m2;
 
-        assert!(matches!(res, Some(Mapper { source, destination, .. }) if source == m1.source && destination == m2.destination));
+        assert!(
+            matches!(res, Some(Mapper { source, destination, .. }) if source == m1.source && destination == m2.destination)
+        );
     }
 
     #[test]
@@ -123,14 +139,16 @@ mod test {
     #[test]
     fn mapper_add_remap_test() {
         let mut m1 = Mapper::new("s", "d", vec![(5, 3, 2), (3, 5, 2)]);
-        println!("m1 breakpoints = {:?}", m1.breakpoints());
+        println!("m1 breakpoints = {:?}", m1.src_breakpoints());
         let mut m2 = Mapper::new("d", "d2", vec![(3, 2, 1), (2, 3, 1)]);
-        println!("m2 breakpoints = {:?}", m2.breakpoints());
+        println!("m2 breakpoints = {:?}", m2.src_breakpoints());
 
         let res = &mut m1 + &mut m2;
 
         println!("res maps: {:?}", res);
 
-        assert!(matches!(res, Some(Mapper { mappings, .. }) if mappings == vec![(2..3, 3..4), (3..5, 5..7), (5..6, 2..3), (6..7, 4..5)]));
+        assert!(
+            matches!(res, Some(Mapper { mappings, .. }) if mappings == vec![(2..3, 3..4), (3..5, 5..7), (5..6, 2..3), (6..7, 4..5)])
+        );
     }
 }

@@ -1,6 +1,6 @@
-use std::ops::Range;
 use crate::mapper::Mapper;
 use anyhow::{anyhow, Result};
+use std::ops::Range;
 
 #[derive(Debug)]
 pub struct Almanac {
@@ -12,7 +12,6 @@ impl Almanac {
     pub fn new(seeds: Vec<Range<u64>>, maps: Vec<Mapper>) -> Self {
         // build direct maps from seeds to everything
 
-
         Almanac { seeds, maps }
     }
 
@@ -22,7 +21,6 @@ impl Almanac {
 
         while curr_mapped_item != map_target {
             if let Some(idx) = maps.iter().position(|m| m.source == curr_mapped_item) {
-
             } else {
                 return None;
             }
@@ -141,6 +139,9 @@ mod test {
 
     #[test]
     fn almanac_build_map_test() {
-        assert!(matches!(Almanac::build_map(&vec![], "nonexistent", "nonexistent"), None));
+        assert!(matches!(
+            Almanac::build_map(&vec![], "nonexistent", "nonexistent"),
+            None
+        ));
     }
 }

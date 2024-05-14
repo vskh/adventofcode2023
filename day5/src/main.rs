@@ -14,7 +14,10 @@ fn main() -> Result<()> {
     let mut seed_range_idx = 0;
     while seed_range_idx < almanac.seeds.len() {
         let seed_range = &almanac.seeds[seed_range_idx];
-        println!("Processing seed range #{}: {:?}", seed_range_idx, seed_range);
+        println!(
+            "Processing seed range #{}: {:?}",
+            seed_range_idx, seed_range
+        );
 
         for seed in seed_range.clone() {
             if let Some(loc) = almanac.try_map("seed", seed, "location") {
