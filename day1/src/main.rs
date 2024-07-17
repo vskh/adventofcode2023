@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 
+#[allow(dead_code)]
 fn get_calibration_value_v1(s: &str) -> u32 {
     let mut digits = vec![];
     for ch in s.chars() {
